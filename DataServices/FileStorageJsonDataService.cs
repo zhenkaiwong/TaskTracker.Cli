@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using TaskTracker.Cli.Logger;
 using TaskTracker.Cli.Models;
@@ -8,6 +9,7 @@ public class FileStorageJsonDataService : IDataService
 {
   protected readonly BaseLogger _logger = new ConsoleLogger();
   protected readonly string _fileName = "data.json";
+  protected List<Models.Task> _tasks = new List<Models.Task>();
 
 
   /// <summary>
@@ -28,12 +30,15 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the tasks are successfully written to the datasource, otherwise false.</returns>
   protected bool TryWriteTasksToDatasource(List<Models.Task> tasks, out string error)
   {
+    _logger.Debug("Trying to write tasks to datasource", this);
     try
     {
       var options = new JsonSerializerOptions { WriteIndented = true };
       string tasksJson = JsonSerializer.Serialize(tasks, options);
       _logger.Debug($"Writing tasks to datasource. Result: {tasksJson}", this);
       File.WriteAllText(_fileName, tasksJson);
+      _tasks.Clear();
+      _logger.Debug("Clear tasks cache since the content has been written to datasource", this);
       error = string.Empty;
       return true;
     }
@@ -53,6 +58,7 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the task count can be retrieved, else false</returns>
   public bool TryGetTaskCountFromDatasource(out int taskCount, out string error)
   {
+    _logger.Debug("Trying to get task count from datasource", this);
     var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
     if (!getTasksSuccess)
     {
@@ -71,8 +77,18 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if all tasks are successfully retrieved and deserialized; otherwise, false.</returns>
   public bool TryGetAllTasks(out List<Models.Task> tasks, out string error)
   {
-    tasks = new List<Models.Task>();
     error = string.Empty;
+
+    _logger.Debug("Trying to get all tasks from datasource", this);
+    _logger.Debug($"Checking if can serve from cache. Task count in cache: {_tasks.Count}", this);
+    if (_tasks.Count > 0)
+    {
+      _logger.Debug("Cache has tasks, returning cache content instead", this);
+      tasks = _tasks;
+      return true;
+    }
+
+    tasks = new List<Models.Task>();
 
     if (!IsDatasourceExist())
     {
@@ -106,6 +122,8 @@ public class FileStorageJsonDataService : IDataService
 
       tasks.Add(task);
     }
+    _logger.Debug($"Storing tasks from datasource to cache", this);
+    _tasks = tasks;
 
     return true;
   }
@@ -117,6 +135,7 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the task is successfully inserted into the datasource, otherwise false.</returns>
   public bool TryInsertTask(Models.Task task, out string error)
   {
+    _logger.Debug($"Trying to insert task in datasource. ID: {task.Id}, Status: {task.Status}, Description: {task.Description}", this);
     var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
     if (!getTasksSuccess)
     {
@@ -142,6 +161,7 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the retrieval is successful, otherwise false</returns>
   public bool TryGetTask(int id, out Models.Task? task, out string error)
   {
+    _logger.Debug($"Trying to get task in datasource using ID: {id}", this);
     task = null;
     var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
     if (!getTasksSuccess)
@@ -169,6 +189,7 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the task is successfully updated, otherwise false.</returns>
   public bool TryUpdateTask(Models.Task task, out string error)
   {
+    _logger.Debug($"Trying to update task in datasource. ID: {task.Id}, Status: {task.Status}, Description: {task.Description}", this);
     var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
     if (!getTasksSuccess)
     {
@@ -200,6 +221,7 @@ public class FileStorageJsonDataService : IDataService
   /// <returns>True if the task is successfully deleted, otherwise false.</returns>
   public bool TryDeleteTask(int id, out string error)
   {
+    _logger.Debug($"Trying to delete task in datasource using ID {id}", this);
     var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
     if (!getTasksSuccess)
     {
