@@ -11,7 +11,7 @@ public class UpdateTaskCommand : BaseCommand
     return result;
   }
 
-  public override bool TryProcess(string[] args, out string? error)
+  public override bool TryProcess(string[] args, out string error)
   {
     throw new NotImplementedException();
   }
