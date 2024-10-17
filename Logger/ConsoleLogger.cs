@@ -1,5 +1,3 @@
-using System;
-
 namespace TaskTracker.Cli.Logger;
 
 public class ConsoleLogger : BaseLogger
