@@ -1,10 +1,12 @@
 using System.Text.Json;
+using TaskTracker.Cli.Logger;
 using TaskTracker.Cli.Models;
 
 namespace TaskTracker.Cli.DataServices;
 
 public class FileStorageJsonDataService : IDataService
 {
+  protected readonly BaseLogger _logger = new ConsoleLogger();
   protected readonly string _fileName = "data.json";
 
 
@@ -13,7 +15,9 @@ public class FileStorageJsonDataService : IDataService
   /// </summary>
   protected bool IsDatasourceExist()
   {
-    return File.Exists(_fileName);
+    var fileExist = File.Exists(_fileName);
+    _logger.Debug($"Checking if datasource exist. Result: {fileExist}", this);
+    return fileExist;
   }
 
   /// <summary>
@@ -28,6 +32,7 @@ public class FileStorageJsonDataService : IDataService
     {
       var options = new JsonSerializerOptions { WriteIndented = true };
       string tasksJson = JsonSerializer.Serialize(tasks, options);
+      _logger.Debug($"Writing tasks to datasource. Result: {tasksJson}", this);
       File.WriteAllText(_fileName, tasksJson);
       error = string.Empty;
       return true;
@@ -37,28 +42,6 @@ public class FileStorageJsonDataService : IDataService
       error = e.Message;
       return false;
     }
-  }
-
-  /// <summary>
-  /// Try to initialize the datasource file regardless of its existence
-  /// </summary>
-  /// <param name="error">The error message if the datasource file cannot be 
-  /// initialized</param>
-  /// <returns>True if the datasource file is successfully initialized, else 
-  /// false</returns>
-  protected bool TryInitializeDatasourceFile(out string error)
-  {
-    try
-    {
-      File.WriteAllText(_fileName, "[]");
-    }
-    catch (Exception e)
-    {
-      error = e.Message;
-      return false;
-    }
-    error = string.Empty;
-    return true;
   }
 
   /// <summary>
