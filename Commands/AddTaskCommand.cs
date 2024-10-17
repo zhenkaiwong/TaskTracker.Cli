@@ -33,7 +33,6 @@ public class AddTaskCommand : BaseCommand
     }
 
     _logger.Debug($"Task \"{task.Description}\" is created", this);
-    _logger.Debug("Trying to write task to datasource", this);
     var writeTaskSuccess = _dataService.TryInsertTask(task, out error);
 
     if (!writeTaskSuccess)
