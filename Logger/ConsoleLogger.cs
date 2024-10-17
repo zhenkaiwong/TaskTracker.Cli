@@ -13,7 +13,7 @@ public class ConsoleLogger : BaseLogger
   {
     if (!IsDebugModeOn()) return;
     Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine($"{messageSourceName}: {debugMessage}");
+    Console.WriteLine($"DEBUG: {debugMessage} [{messageSourceName}]");
     Console.ResetColor();
   }
 
@@ -25,7 +25,7 @@ public class ConsoleLogger : BaseLogger
   public override void Error(string errorMessage, string messageSourceName)
   {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine($"{messageSourceName}: {errorMessage}");
+    Console.WriteLine($"ERROR: {errorMessage} [{messageSourceName}]");
     Console.ResetColor();
   }
 
@@ -36,6 +36,8 @@ public class ConsoleLogger : BaseLogger
 
   public override void Info(string message, string messageSourceName)
   {
-    Console.WriteLine($"{messageSourceName}: {message}");
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine($"INFO: {message} [{messageSourceName}]");
+    Console.ResetColor();
   }
 }
