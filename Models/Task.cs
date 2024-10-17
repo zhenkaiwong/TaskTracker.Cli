@@ -40,7 +40,7 @@ public class Task
   /// <param name="task">The created task object if the operation is successful, otherwise null</param>
   /// <param name="error">The error message if the operation fails</param>
   /// <returns>True if the task is successfully created, otherwise false</returns>
-  public static bool TryCreate(int id, string description, string status, DateTime createdAt, DateTime updatedAt, out Task? task, out string? error)
+  public static bool TryCreate(int id, string description, string status, DateTime createdAt, DateTime updatedAt, out Task? task, out string error)
   {
     if (!IsStatusValid(status))
     {
