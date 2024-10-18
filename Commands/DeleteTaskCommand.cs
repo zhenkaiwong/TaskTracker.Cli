@@ -13,6 +13,8 @@ public class DeleteTaskCommand : BaseCommand
 
   public override bool TryProcess(string[] args, out string error)
   {
-    throw new NotImplementedException();
+    var taskId = int.Parse(args[1]);
+    _logger.Debug($"Deleting task. ID: {taskId}", this);
+    return _dataService.TryDeleteTask(taskId, out error);
   }
 }
