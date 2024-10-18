@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using TaskTracker.Cli.Constants;
 using TaskTracker.Cli.Logger;
 using TaskTracker.Cli.Models;
 
@@ -240,4 +241,27 @@ public class FileStorageJsonDataService : IDataService
     return TryWriteTasksToDatasource(tasks, out error);
   }
 
+  public bool TryUpdateTaskStatus(int id, string status, out string error)
+  {
+    _logger.Debug($"Trying to update task status in datasource. ID: {id}, Status: {status}", this);
+    if (!status.Equals(TaskStatusConstants.InProgressStatus) && !status.Equals(TaskStatusConstants.DoneStatus))
+    {
+      error = $"Invalid status {status}. You should use either {TaskStatusConstants.InProgressStatus} or {TaskStatusConstants.DoneStatus}";
+      return false;
+    }
+
+    var getTaskSuccess = TryGetTask(id, out var task, out error);
+    if (!getTaskSuccess || task is null)
+    {
+      return false;
+    }
+
+    var updateTaskStatusSuccess = task.TryUpdateStatus(status, out error);
+    if (!updateTaskStatusSuccess)
+    {
+      return false;
+    }
+
+    return TryUpdateTask(task, out error);
+  }
 }
