@@ -26,6 +26,13 @@ public class UpdateTaskCommand : BaseCommand
     task.Description = newTaskDescription;
     task.UpdatedAt = DateTime.Now;
 
-    return _dataService.TryUpdateTask(task, out error);
+    var updateTaskSuccess = _dataService.TryUpdateTask(task, out error);
+    if (!updateTaskSuccess)
+    {
+      return false;
+    }
+
+    _logger.Info($"Task {taskId} is updated successfully", this);
+    return true;
   }
 }

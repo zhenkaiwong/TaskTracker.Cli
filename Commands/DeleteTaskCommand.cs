@@ -15,6 +15,12 @@ public class DeleteTaskCommand : BaseCommand
   {
     var taskId = int.Parse(args[1]);
     _logger.Debug($"Deleting task. ID: {taskId}", this);
-    return _dataService.TryDeleteTask(taskId, out error);
+    var deleteTaskSuccess = _dataService.TryDeleteTask(taskId, out error);
+    if (!deleteTaskSuccess)
+    {
+      return false;
+    }
+    _logger.Info($"Task {taskId} is deleted successfully", this);
+    return true;
   }
 }

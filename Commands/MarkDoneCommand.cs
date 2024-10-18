@@ -15,6 +15,12 @@ public class MarkDoneCommand : BaseCommand
   {
     var taskId = int.Parse(args[1]);
     _logger.Debug($"Marking task as done. ID: {taskId}", this);
-    return _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.DoneStatus, out error);
+    var updateTaskStatusSuccess = _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.DoneStatus, out error);
+    if (!updateTaskStatusSuccess)
+    {
+      return false;
+    }
+    _logger.Info($"Task {taskId} is marked as done successfully", this);
+    return true;
   }
 }

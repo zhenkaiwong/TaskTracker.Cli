@@ -15,6 +15,13 @@ public class MarkInProgressCommand : BaseCommand
   {
     var taskId = int.Parse(args[1]);
     _logger.Debug($"Marking task as in-progress. ID: {taskId}", this);
-    return _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.InProgressStatus, out error);
+    var updateTaskStatusSuccess = _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.InProgressStatus, out error);
+
+    if (!updateTaskStatusSuccess)
+    {
+      return false;
+    }
+    _logger.Info($"Task {taskId} is marked as in-progress successfully", this);
+    return true;
   }
 }
