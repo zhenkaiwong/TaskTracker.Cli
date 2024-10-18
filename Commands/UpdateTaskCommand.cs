@@ -13,6 +13,19 @@ public class UpdateTaskCommand : BaseCommand
 
   public override bool TryProcess(string[] args, out string error)
   {
-    throw new NotImplementedException();
+    var taskId = int.Parse(args[1]);
+    var newTaskDescription = args[2];
+    _logger.Debug($"Updating task. ID: {taskId}, Description: {newTaskDescription}", this);
+    var getTaskSuccess = _dataService.TryGetTask(taskId, out var task, out error);
+
+    if (!getTaskSuccess || task is null)
+    {
+      return false;
+    }
+
+    task.Description = newTaskDescription;
+    task.UpdatedAt = DateTime.Now;
+
+    return _dataService.TryUpdateTask(task, out error);
   }
 }
