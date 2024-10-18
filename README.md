@@ -47,4 +47,4 @@ dotnet run list in-progress
 
 # URL to this project
 
-https://github.com/zhenkaiwong/TaskTracker.Cli/tree/main
+https://github.com/zhenkaiwong/TaskTracker.Cli
