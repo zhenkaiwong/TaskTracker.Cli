@@ -13,6 +13,8 @@ public class MarkDoneCommand : BaseCommand
 
   public override bool TryProcess(string[] args, out string error)
   {
-    throw new NotImplementedException();
+    var taskId = int.Parse(args[1]);
+    _logger.Debug($"Marking task as done. ID: {taskId}", this);
+    return _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.DoneStatus, out error);
   }
 }
