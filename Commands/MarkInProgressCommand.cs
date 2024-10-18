@@ -13,6 +13,8 @@ public class MarkInProgressCommand : BaseCommand
 
   public override bool TryProcess(string[] args, out string error)
   {
-    throw new NotImplementedException();
+    var taskId = int.Parse(args[1]);
+    _logger.Debug($"Marking task as in-progress. ID: {taskId}", this);
+    return _dataService.TryUpdateTaskStatus(taskId, TaskStatusConstants.InProgressStatus, out error);
   }
 }
