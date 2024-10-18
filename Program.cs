@@ -9,13 +9,13 @@ class Program
     {
         var commandFactory = new CommandFactory();
         var _logger = new ConsoleLogger();
-        var getCommandSuccess = commandFactory.TryGetCommand(args, out var command, out var error);
+        var getCommandSuccess = commandFactory.TryGetCommand(args, out var command, out var getCommandError);
 
         if (!getCommandSuccess || command is null)
         {
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(getCommandError))
             {
-                _logger.Error(error, "Main");
+                _logger.Error(getCommandError, "Main");
 
             }
             else
@@ -26,18 +26,18 @@ class Program
             return;
         }
 
-        var processCommandSuccess = command.TryProcess(args, out var error);
+        var processCommandSuccess = command.TryProcess(args, out var processCommandError);
 
         if (!processCommandSuccess)
         {
-            if (string.IsNullOrEmpty(error))
+            if (string.IsNullOrEmpty(processCommandError))
             {
                 _logger.Error("Unexpected error. Please try again", "Main");
             }
             else
             {
 
-                _logger.Error(error, "Main");
+                _logger.Error(processCommandError, "Main");
             }
 
             return;
