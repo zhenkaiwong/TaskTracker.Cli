@@ -45,7 +45,7 @@ public class CommandFactory
     command = null;
     if (args.Length == 0)
     {
-      error = "Invalid CLI input. You need to spcify a command and necessary parameters";
+      error = "Invalid CLI input. You need to specify a command and necessary parameters";
       return false;
     }
     var commandToRetrieve = args[0];
