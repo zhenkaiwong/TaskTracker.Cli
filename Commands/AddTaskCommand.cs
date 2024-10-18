@@ -1,4 +1,5 @@
 using TaskTracker.Cli.Constants;
+using TaskTracker.Cli.DataServices;
 using TaskTracker.Cli.Models;
 
 namespace TaskTracker.Cli.Commands;
@@ -14,14 +15,34 @@ public class AddTaskCommand : BaseCommand
 
   public override bool TryProcess(string[] args, out string error)
   {
+    bool tryGetLastTaskId(out int taskId, out string error)
+    {
+      if (_dataService is FileStorageJsonDataService fileStorageJsonDataService)
+      {
+        _logger.Debug("Data service is FileStorageJsonDataService", this);
+        return fileStorageJsonDataService.TryGetLastTaskId(out taskId, out error);
+      }
+      else
+      {
+        _logger.Debug("Data service isn't FileStorageJsonDataService", this);
+        var getTaskCountSuccess = _dataService.TryGetTaskCountFromDatasource(out var currentTaskCount, out error);
+        if (!getTaskCountSuccess)
+        {
+          taskId = 0;
+          return false;
+        }
+
+        taskId = currentTaskCount;
+        return true;
+      }
+    }
     var taskToAddDescription = args[1];
-    var getTaskCountSuccess = _dataService.TryGetTaskCountFromDatasource(out var currentTaskCount, out error);
-    if (!getTaskCountSuccess)
+    var getLastTaskIdSuccess = tryGetLastTaskId(out var lastTaskId, out error);
+    if (!getLastTaskIdSuccess)
     {
       return false;
     }
-
-    var taskID = currentTaskCount + 1;
+    var taskID = lastTaskId + 1;
     DateTime now = DateTime.UtcNow;
 
     _logger.Debug($"Creating a task using following information --> ID: {taskID}, Task description: \"{taskToAddDescription}\", Status: {TaskStatusConstants.TodoStatus}, Created at: {now}, Updated at: {now}", this);

@@ -70,6 +70,31 @@ public class FileStorageJsonDataService : IDataService
     taskCount = tasks.Count;
     return true;
   }
+
+  public bool TryGetLastTaskId(out int id, out string error)
+  {
+
+    _logger.Debug("Trying to get ID for new task", this);
+    var getTasksSuccess = TryGetAllTasks(out var tasks, out error);
+    if (!getTasksSuccess)
+    {
+      id = 0;
+      return false;
+    }
+
+    if (tasks.Count == 0)
+    {
+      id = 0;
+      return true;
+    }
+
+    var orderedTasks = tasks.OrderByDescending(t => t.Id);
+    var taskWithMaxId = orderedTasks.First();
+
+    id = taskWithMaxId.Id;
+    return true;
+  }
+
   /// <summary>
   /// Attempts to retrieve all tasks from the datasource file. If datasource doesn't exist, an empty list is returned.
   /// </summary>
