@@ -8,7 +8,7 @@ public abstract class BaseLogger
   /// <returns></returns>
   protected bool IsDebugModeOn()
   {
-    return true;
+    return false;
   }
 
   public abstract void Info(string message, object messageSource);
